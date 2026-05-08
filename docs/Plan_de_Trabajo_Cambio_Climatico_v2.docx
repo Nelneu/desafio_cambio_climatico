@@ -1,0 +1,634 @@
+**PLAN DE TRABAJO**
+
+Desafio Profesional - Data Science
+
+Caso de Negocio: Cambio Climatico
+
+*Objetivo: Demostrar el impacto del cambio climatico y evaluar el rol de
+las energias renovables en la mitigacion de sus efectos, aplicando
+tecnicas avanzadas de Data Science.*
+
+**1. Contexto y objetivo del desafio**
+
+Este proyecto integral de Data Science abarca desde la exploracion y
+limpieza de datos hasta la aplicacion de modelos de Machine Learning y
+Redes Neuronales para analizar el impacto del cambio climatico a nivel
+global y en Argentina.
+
+**Objetivo general**
+
+Realizar un analisis detallado para demostrar el cambio climatico y
+evaluar el rol de las energias renovables en la mitigacion de sus
+efectos, obteniendo insights significativos mediante tecnicas avanzadas.
+
+**Objetivos especificos**
+
+-   Modelar la evolucion de las emisiones de CO2 a lo largo del tiempo.
+
+-   Evaluar la relacion entre emisiones, poblacion mundial y PBI per
+    capita mediante modelos de regresion.
+
+-   Comparar paises y regiones utilizando tecnicas de clustering
+    (K-Means, DBSCAN).
+
+-   Analizar el crecimiento de energias renovables en la generacion de
+    energia con series temporales.
+
+-   Implementar redes neuronales y comparar su rendimiento con modelos
+    tradicionales de ML.
+
+**Preguntas guia a responder**
+
+-   P1: Como ha evolucionado la emision de CO2 y que patrones pueden
+    predecirse?
+
+-   P2: Cual es la relacion entre emisiones y variables como poblacion
+    mundial o PBI per capita?
+
+-   P3: Que patrones emergen de la participacion de energias renovables
+    en distintos paises?
+
+-   P4: Como se compara la situacion de Argentina con otros paises en
+    emisiones y energia renovable?
+
+**2. Inventario de datasets disponibles**
+
+Se dispone de 5 archivos de datos que cubren distintas dimensiones del
+problema. A continuacion se detalla cada uno con sus caracteristicas y
+el rol que cumple en el analisis.
+
+  -------- ---------------- ------------- ------------- ------------------ ------------------
+  **\#**   **Dataset**      **Formato**   **Periodo**   **Granularidad**   **Variables
+                                                                           clave**
+
+  1        Emisiones CO2    .xlsx (3      2007-2017     Anual              Factor emision
+           Argentina        hojas)                                         tCO2/MWh, consumo
+                                                                           combustibles
+
+  2        Estadisticas     .xlsx (27     1990-2018     Anual x pais       CO2, electricidad,
+           energia mundial  hojas)                                         renovables,
+                                                                           petroleo, gas,
+                                                                           carbon
+
+  3        PBI per capita   .xls          1960-2019     Anual x pais       PBI per capita en
+           (Banco Mundial)                                                 US\$ corrientes
+
+  4        Poblacion        .xlsx         1960-2019     Anual x pais       Poblacion total
+           mundial (Banco                                                  por pais
+           Mundial)                                                        
+
+  5        Proyectos        .xlsx         2011-2020     Mensual x central  Energia GWh,
+           renovables                                                      fuente, provincia,
+           Argentina                                                       central
+  -------- ---------------- ------------- ------------- ------------------ ------------------
+
+**Fuente complementaria:** Banco Mundial (data.worldbank.org) para datos
+adicionales.
+
+**3. Mapeo: datasets por pregunta de investigacion**
+
+Cada pregunta del desafio requiere combinar distintos datasets. Esta
+tabla muestra que dataset alimenta cada pregunta y que tecnicas se
+aplican.
+
+  --------------------- ---------------- ---------------- ---------------------
+  **Pregunta**          **Datasets       **Tecnicas**     **Visualizaciones**
+                        principales**                     
+
+  P1: Evolucion y       DS2 (CO2         Series           Lineas temporales,
+  prediccion de         emissions) + DS1 temporales,      tendencias, forecast
+  emisiones CO2         (CO2 Argentina)  regresion, redes 
+                                         neuronales       
+
+  P2: Relacion          DS2 (CO2) + DS3  Regresion        Heatmaps, scatter
+  emisiones vs PBI vs   (PBI) + DS4      multiple,        plots, matrices
+  poblacion             (Poblacion)      correlacion      correlacion
+
+  P3: Patrones          DS2 (Share       Clustering       Scatter clusters,
+  renovables entre      renewables,      (K-Means,        mapas, barras
+  paises                Electricity)     DBSCAN)          comparativas
+
+  P4: Argentina vs      DS1 + DS2 + DS5  Analisis         Lineas superpuestas,
+  mundo                 (Renovables Arg) comparativo,     barras apiladas
+                                         series           
+                                         temporales       
+  --------------------- ---------------- ---------------- ---------------------
+
+**4. Estrategia de integracion de datasets**
+
+Una de las tareas criticas es unificar los 5 datasets en estructuras
+compatibles. Estos son los desafios y la estrategia para resolverlos.
+
+**4.1 Problemas identificados**
+
+-   Encabezados inconsistentes: los archivos del Banco Mundial (DS3,
+    DS4) tienen 2 filas de metadata antes de los datos reales; DS2 tiene
+    la primera fila como titulo de la hoja.
+
+-   Formato wide vs long: DS2, DS3 y DS4 tienen los anios como columnas
+    (formato wide). Necesitan ser pivoteados a formato long (pais, anio,
+    valor) para poder hacer joins.
+
+-   Nombres de paises/regiones: DS2 usa nombres como \'European Union\',
+    DS3/DS4 usan \'Country Name\' + \'Country Code\'. Hay que unificar
+    con un mapeo de nombres.
+
+-   Periodos distintos: DS1 cubre 2007-2017, DS2 cubre 1990-2018,
+    DS3/DS4 cubren 1960-2019, DS5 cubre 2011-2020. El rango comun util
+    es 1990-2018.
+
+-   Unidades distintas: CO2 en MtCO2 (DS2) vs tCO2/MWh (DS1). Energia en
+    Mtoe, TWh, GWh segun la hoja/dataset.
+
+**4.2 Pipeline de integracion**
+
+Se propone el siguiente flujo ETL en 4 pasos:
+
+**Paso 1: Extraccion y parseo individual**
+
+-   DS1: Leer hoja \'FACTOR DE EMISION OM SIMPLE\', saltar las 4
+    primeras filas, renombrar columnas a \[anio, factor_expost,
+    factor_exante\].
+
+-   DS2: Para cada hoja relevante (CO2 emissions, Share renewables,
+    Electricity production, etc.), leer saltando fila 0 (titulo), usar
+    fila 1 como anios y columna 0 como pais/region.
+
+-   DS3/DS4: Saltar las 2 primeras filas de metadata. Fila 2 tiene los
+    headers reales (Country Name, Country Code, Indicator Name,
+    Indicator Code, 1960\...2019).
+
+-   DS5: Fila 0 es el header real. Renombrar columnas de \'Unnamed\' a
+    los nombres de la fila 0.
+
+**Paso 2: Transformacion a formato long (tidy)**
+
+-   DS2, DS3, DS4: Aplicar melt/unpivot para pasar de columnas-anio a
+    filas con estructura (pais, anio, valor).
+
+-   DS5: Ya esta en formato long (cada fila = una central en un mes).
+    Agregar a nivel anual si se necesita integrar con los otros.
+
+**Paso 3: Unificacion de claves**
+
+-   Crear tabla de mapeo pais_nombre -\> codigo_iso3 para poder hacer
+    joins entre DS2 (nombres en ingles) y DS3/DS4 (Country Code ISO).
+
+-   Filtrar rango temporal comun: 1990-2018 para el dataset integrado
+    global.
+
+-   Estandarizar unidades donde sea posible (documentar las que quedan
+    en unidades distintas).
+
+**Paso 4: Merge y dataset maestro**
+
+-   Dataset global integrado: JOIN de DS2 (CO2, electricidad,
+    renovables) + DS3 (PBI) + DS4 (Poblacion) por (pais, anio).
+    Resultado esperado: \~60 paises x 29 anios = \~1,740 filas.
+
+-   Dataset Argentina especifico: DS1 (factor emision) + DS5 (generacion
+    renovable agregada anual) por anio. Resultado esperado: \~10 filas
+    (2011-2017 solapamiento).
+
+-   Guardar ambos datasets como CSV limpios para las etapas siguientes.
+
+**5. Plan de trabajo paso a paso**
+
+Organizado siguiendo las 4 etapas del Desafio Profesional, con sub-pasos
+incrementales para avanzar de forma iterativa.
+
+**ETAPA 1: Exploracion visual de los datos (EDA)**
+
+**Objetivo:** Identificar patrones, tendencias y anomalias mediante
+visualizaciones iniciales.
+
+**Paso 1.1 - Carga y primera inspeccion**
+
+-   Importar librerias (pandas, numpy, matplotlib, seaborn).
+
+-   Cargar cada dataset corrigiendo encabezados (skiprows, header).
+
+-   Verificar shape, dtypes, head(), info() de cada uno.
+
+-   Checkpoint: todos los datasets cargados correctamente.
+
+**Paso 1.2 - Estadisticas descriptivas**
+
+-   describe() para cada variable numerica.
+
+-   Conteo de nulos por columna en cada dataset.
+
+-   Identificar tipos de datos incorrectos (anios como float, valores
+    como string).
+
+**Paso 1.3 - Visualizaciones exploratorias**
+
+-   Graficos de linea: evolucion temporal de CO2 mundial (DS2).
+
+-   Histogramas: distribucion de emisiones per capita.
+
+-   Heatmap: correlaciones entre variables de DS2.
+
+-   Barras: top 10 paises emisores en 2018.
+
+-   Lineas: participacion renovable por region (DS2).
+
+-   Barras apiladas: generacion por fuente en Argentina (DS5).
+
+**Paso 1.4 - Documentacion de hallazgos**
+
+-   Escribir documento con hallazgos iniciales y decisiones tomadas.
+
+-   Identificar outliers y anomalias encontradas.
+
+**ETAPA 2: Limpieza y transformacion de datos**
+
+**Objetivo:** Dejar los datos en condiciones optimas para el modelado,
+aplicando el pipeline ETL de la Seccion 4.
+
+**Paso 2.1 - Limpieza individual de cada dataset**
+
+-   Corregir encabezados y tipos de datos.
+
+-   Tratar valores faltantes (estrategia por variable: imputar,
+    eliminar, interpolar).
+
+-   Detectar y tratar outliers (IQR, z-score).
+
+-   Eliminar duplicados.
+
+**Paso 2.2 - Transformacion a formato tidy**
+
+-   Pivotar DS2, DS3, DS4 de formato wide a long.
+
+-   Agregar DS5 a nivel anual por fuente de energia.
+
+-   Crear variables derivadas (emisiones per capita = CO2/poblacion,
+    intensidad = CO2/PBI).
+
+**Paso 2.3 - Integracion de datasets**
+
+-   Construir tabla de mapeo de nombres de paises.
+
+-   Ejecutar los JOINs descritos en Seccion 4.4.
+
+-   Verificar integridad del dataset maestro resultante.
+
+-   Normalizar/escalar variables numericas si es necesario.
+
+**Paso 2.4 - Documentacion ETL**
+
+-   Extract: documentar origen, formato y como se carga cada archivo.
+
+-   Transform: documentar cada decision de limpieza y transformacion con
+    justificacion.
+
+-   Load: exportar datasets finales como CSV, describir estructura
+    resultante.
+
+**ETAPA 3: Modelado con Machine Learning**
+
+**Objetivo:** Desarrollar modelos supervisados y no supervisados para
+responder las preguntas del caso.
+
+**Paso 3.1 - Preparacion para modelado**
+
+-   Separar features (X) y target (y) segun el problema.
+
+-   Train/test split (80/20 o validacion cruzada).
+
+-   Verificar que no haya data leakage.
+
+**Paso 3.2 - Modelos de regresion (P1, P2)**
+
+-   Regresion lineal simple: CO2 vs tiempo.
+
+-   Regresion multiple: CO2 vs PBI + poblacion + % renovables.
+
+-   Regresion polinomial si se detectan relaciones no lineales.
+
+-   Regularizacion (Ridge, Lasso) para manejar multicolinealidad.
+
+-   Metricas: MSE, RMSE, R2, analisis de residuales.
+
+**Paso 3.3 - Clustering (P3)**
+
+-   Seleccionar features: emisiones CO2, % renovables, PBI per capita,
+    poblacion.
+
+-   Escalar con StandardScaler.
+
+-   K-Means: metodo del codo para elegir K, silhouette score.
+
+-   DBSCAN como alternativa para detectar outliers.
+
+-   Visualizar clusters y perfilar cada grupo.
+
+**Paso 3.4 - Series temporales (P1, P4)**
+
+-   Analisis de tendencia y estacionalidad en emisiones CO2.
+
+-   Modelo ARIMA o Prophet para forecast de emisiones.
+
+-   Evaluar con metricas temporales (MAE, MAPE).
+
+**Paso 3.5 - Comparacion y seleccion de modelos**
+
+-   Validacion cruzada para comparar modelos.
+
+-   Ajuste de hiperparametros (GridSearch/RandomSearch).
+
+-   Tabla comparativa de metricas por modelo.
+
+**ETAPA 4: Implementacion de redes neuronales**
+
+**Objetivo:** Construir redes neuronales para el mismo problema y
+comparar con modelos tradicionales.
+
+**Paso 4.1 - Red neuronal para regresion**
+
+-   Arquitectura MLP con TensorFlow/Keras para predecir emisiones CO2.
+
+-   Experimentar con capas, neuronas, funciones de activacion.
+
+-   Early stopping y dropout para evitar overfitting.
+
+**Paso 4.2 - Red neuronal para series temporales**
+
+-   LSTM o GRU para forecast de emisiones.
+
+-   Preparar datos en secuencias (ventana deslizante).
+
+-   Comparar con ARIMA/Prophet de Etapa 3.
+
+**Paso 4.3 - Fine tuning y optimizacion**
+
+-   Ajuste de learning rate, batch size, epochs.
+
+-   Regularizacion L1/L2, batch normalization.
+
+-   Curvas de aprendizaje (loss vs epochs).
+
+**Paso 4.4 - Comparacion ML tradicional vs Deep Learning**
+
+-   Tabla comparativa: precision, recall, F1, MSE, R2 segun el problema.
+
+-   Analisis de trade-offs: complejidad, tiempo de entrenamiento,
+    interpretabilidad.
+
+-   Conclusiones sobre cuando conviene cada enfoque.
+
+**Paso 4.5 - Presentacion final y storytelling**
+
+-   Narrativa coherente desde la exploracion hasta las conclusiones.
+
+-   Visualizaciones finales que comuniquen insights clave.
+
+-   Recomendaciones basadas en el analisis.
+
+**6. Entregables del proyecto**
+
+A continuacion se detallan los 14 entregables concretos del desafio,
+organizados por etapa. Los entregables 1 a 7 estan definidos
+explicitamente por Digital House. Los entregables 8 a 14 se derivan de
+los criterios de evaluacion de las Etapas 3 y 4.
+
+**6.1 Etapa 1: Exploracion visual de los datos**
+
+  -------- ----------------- ------------------------------- ------------------
+  **\#**   **Entregable**    **Descripcion**                 **Formato**
+
+  1        Analisis          Documento con hallazgos         Notebook (.ipynb)
+           Exploratorio      iniciales: estadisticas         
+           (EDA)             descriptivas, identificacion de 
+                             outliers, patrones y            
+                             tendencias. Incluir             
+                             visualizaciones que respalden   
+                             cada hallazgo.                  
+
+  2        Scripts de codigo Codigo para cargar, manipular y Notebook (.ipynb)
+           Python            explorar los datasets. Bien     o .py
+                             organizado, comentado y         
+                             reproducible.                   
+
+  3        Visualizaciones   Graficos claros con titulos,    Integradas en
+                             etiquetas y leyendas: lineas    notebook
+                             temporales, histogramas,        
+                             heatmaps de correlacion, barras 
+                             comparativas.                   
+
+  4        Documentacion del Documento que detalle el        Markdown en
+           proceso           proceso seguido, tecnicas       notebook
+                             utilizadas y justificaciones de 
+                             cada decision. Narrativa        
+                             coherente desde la carga hasta  
+                             las conclusiones iniciales.     
+  -------- ----------------- ------------------------------- ------------------
+
+**6.2 Etapa 2: Limpieza y transformacion de datos**
+
+  -------- ---------------- ------------------------------------------ ------------------
+  **\#**   **Entregable**   **Descripcion**                            **Formato**
+
+  5        Scripts de       Codigo Python (y SQL si aplica) que        Notebook (.ipynb)
+           limpieza y       documenta como se limpiaron y              o .py
+           transformacion   transformaron los datos. Organizado,       
+                            comentado y facil de seguir.               
+
+  6        Dataset final    Datos limpios e integrados, listos para    Archivos CSV
+           transformado     modelado. Incluye el dataset maestro       
+                            global                                     
+                            (pais/anio/CO2/PBI/poblacion/renovables) y 
+                            el dataset Argentina (factor emision +     
+                            generacion renovable).                     
+
+  7        Documentacion    Documento detallado: Extract (origen y     Markdown en
+           del proceso ETL  carga), Transform (decisiones de limpieza  notebook
+                            con justificacion), Load (estructura       
+                            final). Reproducible por cualquier         
+                            persona.                                   
+  -------- ---------------- ------------------------------------------ ------------------
+
+**6.3 Etapa 3: Modelado con Machine Learning**
+
+  -------- ----------------- ------------------------------- ------------------
+  **\#**   **Entregable**    **Descripcion**                 **Formato**
+
+  8        Notebook de       Codigo completo: regresion      Notebook (.ipynb)
+           modelos ML        (simple, multiple, polinomial,  
+                             Ridge/Lasso), clustering        
+                             (K-Means, DBSCAN), series       
+                             temporales (ARIMA/Prophet). Con 
+                             validacion cruzada y ajuste de  
+                             hiperparametros.                
+
+  9        Tabla comparativa Comparacion entre modelos: MSE, Integrada en
+           de metricas       RMSE, R2, MAE para regresion;   notebook
+                             Silhouette para clustering.     
+                             Analisis de residuales.         
+                             Justificacion del mejor modelo. 
+
+  10       Visualizaciones   Graficos de predicciones vs     Integradas en
+           de resultados     valores reales, clusters        notebook
+                             coloreados, forecast con        
+                             intervalos de confianza,        
+                             feature importance.             
+  -------- ----------------- ------------------------------- ------------------
+
+**6.4 Etapa 4: Redes neuronales y presentacion final**
+
+  -------- ---------------- ------------------------------- ------------------
+  **\#**   **Entregable**   **Descripcion**                 **Formato**
+
+  11       Notebook de      Implementacion con              Notebook (.ipynb)
+           redes neuronales TensorFlow/Keras o PyTorch: MLP 
+                            para regresion, LSTM/GRU para   
+                            series temporales. Fine tuning, 
+                            early stopping, dropout. Curvas 
+                            de aprendizaje.                 
+
+  12       Comparacion ML   Tabla y visualizaciones         Integrada en
+           vs Deep Learning comparando modelos              notebook
+                            tradicionales (Etapa 3) contra  
+                            redes neuronales (Etapa 4).     
+                            Trade-offs: precision,          
+                            complejidad, interpretabilidad, 
+                            tiempo de entrenamiento.        
+
+  13       Informe final    Narrativa completa del          Notebook final o
+           con storytelling proyecto: desde la exploracion  PDF
+                            hasta las conclusiones.         
+                            Historia con los datos que      
+                            comunique insights de manera    
+                            efectiva. Recomendaciones       
+                            basadas en evidencia.           
+
+  14       Codigo completo  Entregable transversal: todo el Repositorio o
+           del proyecto     codigo organizado, documentado, carpeta
+                            reproducible y mantenible. Que  
+                            funcione con datos adicionales  
+                            y sea adaptable. Incluye README 
+                            con instrucciones.              
+  -------- ---------------- ------------------------------- ------------------
+
+**6.5 Estructura de carpetas sugerida para la entrega**
+
+Se recomienda organizar todo el proyecto en la siguiente estructura, que
+facilita la evaluacion y la reproducibilidad:
+
+**desafio_cambio_climatico/**
+
+01_EDA/
+
+01_exploracion_visual.ipynb
+
+02_Limpieza/
+
+02_limpieza_transformacion.ipynb
+
+datos_limpios/
+
+dataset_global.csv
+
+dataset_argentina.csv
+
+03_Modelado_ML/
+
+03_modelos_ml.ipynb
+
+04_Redes_Neuronales/
+
+04_redes_neuronales.ipynb
+
+05_comparacion_final.ipynb
+
+datos_originales/
+
+(los 5 archivos Excel originales)
+
+informe_final.pdf
+
+README.md
+
+Nota: Los notebooks de Jupyter funcionan simultaneamente como entregable
+de codigo, documentacion y visualizaciones, ya que permiten mezclar
+celdas de markdown explicativo con codigo ejecutable y sus resultados.
+Esto simplifica la entrega sin perder profundidad.
+
+**7. Criterios de evaluacion**
+
+El desafio se evalua en 5 dimensiones. Tener estos criterios presentes
+durante todo el desarrollo para maximizar la calificacion.
+
+**1. Profundidad del EDA**
+
+-   Cobertura de todas las variables relevantes para modelos
+    predictivos.
+
+-   Identificacion de patrones, tendencias y anomalias.
+
+-   Uso de tecnicas estadisticas avanzadas (correlaciones,
+    distribuciones).
+
+-   Visualizaciones efectivas: histogramas, heatmaps, matrices de
+    correlacion.
+
+**2. Desarrollo y evaluacion de modelos**
+
+-   Seleccion adecuada de algoritmos segun el problema.
+
+-   Uso de validacion cruzada y ajuste de hiperparametros.
+
+-   Metricas apropiadas: precision, recall, F1, AUC-ROC, MSE.
+
+-   Comparacion rigurosa entre ML tradicional y redes neuronales.
+
+**3. Calidad de la presentacion de resultados**
+
+-   Resultados presentados de manera clara y comprensible.
+
+-   Visualizaciones que expliquen las diferencias entre modelos.
+
+-   Storytelling: capacidad de contar una historia con los datos.
+
+**4. Coherencia y justificacion de conclusiones**
+
+-   Conclusiones basadas en el analisis de datos y resultados de
+    modelos.
+
+-   Storytelling tecnico claro y coherente.
+
+-   Todas las decisiones de modelado bien justificadas y documentadas.
+
+**5. Performance y escalabilidad**
+
+-   Facilidad de mantenimiento y adaptacion del codigo para futuros
+    cambios.
+
+-   Documentacion que soporte futuras modificaciones y reutilizacion.
+
+-   Eficiencia y escalabilidad de los modelos con datos adicionales.
+
+**8. Stack tecnologico**
+
+  ------------------ ---------------------- ------------------------------
+  **Categoria**      **Herramientas**       **Uso principal**
+
+  Manipulacion de    Pandas, NumPy          Carga, limpieza,
+  datos                                     transformacion, integracion
+
+  Visualizacion      Matplotlib, Seaborn,   EDA, graficos de resultados,
+                     Plotly                 dashboards
+
+  ML tradicional     Scikit-learn           Regresion, clustering,
+                                            metricas, validacion
+
+  Deep Learning      TensorFlow/Keras o     MLP, LSTM, redes neuronales
+                     PyTorch                
+
+  Series temporales  Statsmodels, Prophet   ARIMA, descomposicion,
+                                            forecast
+
+  Entorno            Jupyter Notebook /     Desarrollo interactivo,
+                     Google Colab           documentacion inline
+  ------------------ ---------------------- ------------------------------
