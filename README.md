@@ -26,7 +26,7 @@ desafio_cambio_climatico/
 ├── 02_Limpieza/                  Limpieza y transformación de datasets
 ├── 03_Modelado_ML/               Machine learning clásico (Ridge, Lasso, ARIMA, K-Means)
 ├── 04_Redes_Neuronales/          Deep learning (MLP, LSTM, comparación ML vs DL)
-├── 05_Informe_Final/             Capstone narrativo del proyecto
+├── 05_Storytelling/              Capstone narrativo: el informe final del proyecto
 ├── datos/
 │   ├── originales/               Fuentes públicas (instrucciones de descarga)
 │   └── limpios/                  Datasets procesados, listos para usar
@@ -75,9 +75,9 @@ Para una lectura ordenada del proyecto, recomiendo seguir las etapas en orden:
 | 2 | [`02_Limpieza/`](./02_Limpieza/) | Limpieza, integración de fuentes, datasets finales |
 | 3 | [`03_Modelado_ML/`](./03_Modelado_ML/) | Regresión lineal, regularización, clustering, ARIMA |
 | 4 | [`04_Redes_Neuronales/`](./04_Redes_Neuronales/) | MLP global, LSTM Argentina, comparación ML vs DL |
-| 5 | [`05_Informe_Final/`](./05_Informe_Final/) | Capstone narrativo: las 4 preguntas centrales y sus respuestas |
+| 5 | [`05_Storytelling/`](./05_Storytelling/) | Capstone narrativo: las 4 preguntas centrales y sus respuestas |
 
-Si querés ir directo al **cierre del proyecto**, abrí la [Etapa 5 — Informe Final](./05_Informe_Final/) o su [versión renderizada en HTML](./reportes/05_informe_final_storytelling.html). Está pensado para leerse de corrido, sin necesidad de ejecutar código.
+Si querés ir directo al **cierre del proyecto**, abrí la [Etapa 5 — Informe Final](./05_Storytelling/) o su [versión renderizada en HTML](./05_Storytelling/05_informe_final.html). Está pensado para leerse de corrido, sin necesidad de ejecutar código.
 
 ---
 
