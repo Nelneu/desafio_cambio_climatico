@@ -25,11 +25,12 @@ desafio_cambio_climatico/
 ├── 01_EDA/                       Análisis exploratorio de los datos
 ├── 02_Limpieza/                  Limpieza y transformación de datasets
 ├── 03_Modelado_ML/               Machine learning clásico (Ridge, Lasso, ARIMA, K-Means)
-├── 04_Redes_Neuronales/          Deep learning (MLP, LSTM, fine-tuning)
+├── 04_Redes_Neuronales/          Deep learning (MLP, LSTM, comparación ML vs DL)
+├── 05_Informe_Final/             Capstone narrativo del proyecto
 ├── datos/
 │   ├── originales/               Fuentes públicas (instrucciones de descarga)
 │   └── limpios/                  Datasets procesados, listos para usar
-├── reportes/                     HTMLs renderizados + informe final
+├── reportes/                     HTMLs renderizados de los notebooks
 └── docs/                         Plan de trabajo y documentación
 ```
 
@@ -73,9 +74,10 @@ Para una lectura ordenada del proyecto, recomiendo seguir las etapas en orden:
 | 1 | [`01_EDA/`](./01_EDA/) | Exploración visual, distribuciones, correlaciones |
 | 2 | [`02_Limpieza/`](./02_Limpieza/) | Limpieza, integración de fuentes, datasets finales |
 | 3 | [`03_Modelado_ML/`](./03_Modelado_ML/) | Regresión lineal, regularización, clustering, ARIMA |
-| 4 | [`04_Redes_Neuronales/`](./04_Redes_Neuronales/) | MLP global, LSTM Argentina, fine-tuning |
+| 4 | [`04_Redes_Neuronales/`](./04_Redes_Neuronales/) | MLP global, LSTM Argentina, comparación ML vs DL |
+| 5 | [`05_Informe_Final/`](./05_Informe_Final/) | Capstone narrativo: las 4 preguntas centrales y sus respuestas |
 
-Si querés ir directo a los **resultados**, los notebooks de Etapa 4 también están renderizados en [`reportes/`](./reportes/) como HTML, sin necesidad de ejecutarlos.
+Si querés ir directo al **cierre del proyecto**, abrí la [Etapa 5 — Informe Final](./05_Informe_Final/) o su [versión renderizada en HTML](./reportes/05_informe_final_storytelling.html). Está pensado para leerse de corrido, sin necesidad de ejecutar código.
 
 ---
 
