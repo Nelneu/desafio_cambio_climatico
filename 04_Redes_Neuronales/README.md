@@ -17,14 +17,14 @@ Y, fundamentalmente: **entender por qué** cuando la red gana, y **comparar rigu
 
 ## 📓 Notebooks
 
-| Paso | Notebook | Tema |
-|---|---|---|
-| 4.1 | `04_1_mlp_regresion.ipynb` | MLP para regresión global de CO₂ per cápita |
-| 4.2 | `04_2_lstm_series_temporales.ipynb` | LSTM sobre serie mensual de Argentina |
-| 4.3 | `04_3_lstm_fine_tuning.ipynb` | Optimización del LSTM (hiperparámetros, regularización) |
-| 4.4.A | `04_4_A_comparacion_regresion.ipynb` | Comparación ML vs DL — bloque de regresión |
-| 4.4.B | `04_4_B_comparacion_forecasting.ipynb` | Comparación ML vs DL — bloque de series temporales |
-| 4.4.C | `04_4_C_sintesis_transversal.ipynb` | Síntesis transversal y guía decisional |
+| Paso | Notebook | Ver sin ejecutar | Tema |
+|---|---|---|---|
+| 4.1 | [`04_redes_neuronales_paso4_1.ipynb`](./04_redes_neuronales_paso4_1.ipynb) | [HTML](./04_redes_neuronales_paso4_1.html) | MLP para regresión global de CO₂ per cápita |
+| 4.2 | [`04_redes_neuronales_paso4_2.ipynb`](./04_redes_neuronales_paso4_2.ipynb) | [HTML](./04_redes_neuronales_paso4_2.html) | LSTM sobre serie mensual de Argentina |
+| 4.3 | [`04_redes_neuronales_paso4_3.ipynb`](./04_redes_neuronales_paso4_3.ipynb) | [HTML](./04_redes_neuronales_paso4_3.html) | Optimización del LSTM (hiperparámetros, regularización) |
+| 4.4.A | [`04_redes_neuronales_paso4_4_A.ipynb`](./04_redes_neuronales_paso4_4_A.ipynb) | [HTML](./04_redes_neuronales_paso4_4_A.html) | Comparación ML vs DL — bloque de regresión |
+| 4.4.B | [`04_redes_neuronales_paso4_4_B.ipynb`](./04_redes_neuronales_paso4_4_B.ipynb) | [HTML](./04_redes_neuronales_paso4_4_B.html) | Comparación ML vs DL — bloque de series temporales |
+| 4.4.C | [`04_redes_neuronales_paso4_4_C.ipynb`](./04_redes_neuronales_paso4_4_C.ipynb) | [HTML](./04_redes_neuronales_paso4_4_C.html) | Síntesis transversal y guía decisional |
 
 > 💡 **¿Por qué 4.4 está dividido en tres notebooks?** La comparación ML vs Deep Learning aborda dos familias de problemas (regresión y forecasting) con métodos y datasets distintos. Cada uno merece su propio análisis aislado (4.4.A y 4.4.B), y la síntesis cruzada (4.4.C) requiere combinar resultados de ambos. Mantenerlos separados hace cada notebook más legible y evita un único archivo monstruoso.
 
@@ -65,15 +65,15 @@ Y, fundamentalmente: **entender por qué** cuando la red gana, y **comparar rigu
 
 | Archivo | Descripción |
 |---|---|
-| `04_1_mlp_regresion.ipynb` | MLP para regresión global |
-| `04_2_lstm_series_temporales.ipynb` | LSTM sobre serie mensual |
-| `04_3_lstm_fine_tuning.ipynb` | Optimización del LSTM |
-| `04_4_A_comparacion_regresion.ipynb` | Comparación ML vs DL — regresión |
-| `04_4_B_comparacion_forecasting.ipynb` | Comparación ML vs DL — forecasting |
-| `04_4_C_sintesis_transversal.ipynb` | Síntesis transversal |
+| `04_redes_neuronales_paso4_1.ipynb` + `.html` | MLP para regresión global |
+| `04_redes_neuronales_paso4_2.ipynb` + `.html` | LSTM sobre serie mensual |
+| `04_redes_neuronales_paso4_3.ipynb` + `.html` | Optimización del LSTM |
+| `04_redes_neuronales_paso4_4_A.ipynb` + `.html` | Comparación ML vs DL — regresión |
+| `04_redes_neuronales_paso4_4_B.ipynb` + `.html` | Comparación ML vs DL — forecasting |
+| `04_redes_neuronales_paso4_4_C.ipynb` + `.html` | Síntesis transversal |
 | `README.md` | Este archivo |
 
-> Las versiones renderizadas en HTML de estos notebooks están en [`../reportes/`](../reportes/) — útiles para revisar resultados sin ejecutar el código.
+> 💡 Cada notebook tiene su **versión renderizada en HTML** en esta misma carpeta, con todas las salidas y gráficos ya ejecutados. Si querés revisar los resultados sin instalar nada ni correr código, esa es la vía rápida.
 
 ---
 
