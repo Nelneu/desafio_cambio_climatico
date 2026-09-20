@@ -30,11 +30,10 @@ desafio_cambio_climatico/
 ├── datos/
 │   ├── originales/               Fuentes públicas (instrucciones de descarga)
 │   └── limpios/                  Datasets procesados, listos para usar
-├── reportes/                     HTMLs renderizados de los notebooks
 └── docs/                         Plan de trabajo y documentación
 ```
 
-Cada carpeta numerada corresponde a una etapa del proyecto y contiene su propio `README.md` con el contexto, los hallazgos y los archivos relevantes.
+Cada carpeta numerada corresponde a una etapa del proyecto y contiene su propio `README.md` con el contexto, los hallazgos y los archivos relevantes. Además, **cada notebook `.ipynb` va acompañado de su versión renderizada `.html`** en la misma carpeta: útil para revisar resultados y gráficos sin instalar nada ni ejecutar código.
 
 ---
 
