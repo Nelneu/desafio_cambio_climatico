@@ -19,7 +19,7 @@ Esta etapa **no toma decisiones de modelado**. Solo levanta hallazgos y abre int
 
 ## 📓 Notebook
 
-- [`01_exploracion_visual.ipynb`](./01_exploracion_visual.ipynb)
+- [`01_EDA_completo.ipynb`](./01_EDA_completo.ipynb) — o su [versión renderizada en HTML](./01_EDA_completo.html), para leer los resultados sin ejecutar código
 
 ---
 
@@ -36,7 +36,8 @@ Esta etapa **no toma decisiones de modelado**. Solo levanta hallazgos y abre int
 
 | Archivo | Descripción |
 |---|---|
-| `01_exploracion_visual.ipynb` | Notebook con todo el EDA: distribuciones, correlaciones, series temporales preliminares |
+| `01_EDA_completo.ipynb` | Notebook con todo el EDA: distribuciones, correlaciones, series temporales preliminares |
+| `01_EDA_completo.html` | Versión renderizada del notebook, con todas las salidas y gráficos |
 | `README.md` | Este archivo |
 
 ---
