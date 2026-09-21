@@ -18,7 +18,7 @@ Los resultados de esta etapa funcionan como **línea de base** que la Etapa 4 (r
 
 ## 📓 Notebook
 
-- [`03_modelos_ml.ipynb`](./03_modelos_ml.ipynb)
+- [`03_modelado_ml.ipynb`](./03_modelado_ml.ipynb) — o su [versión renderizada en HTML](./03_modelado_ml.html), para leer los resultados sin ejecutar código
 
 ---
 
@@ -47,7 +47,8 @@ Los resultados de esta etapa funcionan como **línea de base** que la Etapa 4 (r
 
 | Archivo | Descripción |
 |---|---|
-| `03_modelos_ml.ipynb` | Notebook con todos los modelos clásicos |
+| `03_modelado_ml.ipynb` | Notebook con todos los modelos clásicos |
+| `03_modelado_ml.html` | Versión renderizada del notebook, con todas las salidas y gráficos |
 | `README.md` | Este archivo |
 
 ---
