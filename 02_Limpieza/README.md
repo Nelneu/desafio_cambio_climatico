@@ -19,7 +19,7 @@ Tomar las fuentes originales (Excels y CSVs heterogéneos de Secretaría de Ener
 
 ## 📓 Notebook
 
-- [`02_limpieza_transformacion.ipynb`](./02_limpieza_transformacion.ipynb)
+- [`02_limpieza_transformacion.ipynb`](./02_limpieza_transformacion.ipynb) — o su [versión renderizada en HTML](./02_limpieza_transformacion.html), para leer los resultados sin ejecutar código
 
 ---
 
@@ -38,6 +38,7 @@ Tomar las fuentes originales (Excels y CSVs heterogéneos de Secretaría de Ener
 | Archivo | Descripción |
 |---|---|
 | `02_limpieza_transformacion.ipynb` | Notebook con todo el pipeline de limpieza |
+| `02_limpieza_transformacion.html` | Versión renderizada del notebook, con todas las salidas |
 | `README.md` | Este archivo |
 
 > Los **datasets de salida** están en [`../datos/limpios/`](../datos/limpios/).
