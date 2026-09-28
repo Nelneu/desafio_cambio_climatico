@@ -18,9 +18,13 @@ Los resultados de esta etapa funcionan como **línea de base** que la Etapa 4 (r
 
 ## 📓 Notebook
 
-- [`03_modelado_ml.ipynb`](./03_modelado_ml.ipynb) — o su [versión renderizada en HTML](./03_modelado_ml.html), para leer los resultados sin ejecutar código
+- [`03_modelado_ml.ipynb`](./03_modelado_ml.ipynb) — o su [HTML](./03_modelado_ml.html), instantánea anterior no regenerada con este cambio de rutas
 
 ---
+
+## 📍 Rutas y dependencia
+
+Ejecutar primero la Etapa 2: este notebook lee cuatro CSV de `datos/limpios/` y escribe `datos/intermedios/resultados_modelos_etapa3.csv` (crea el directorio solo al exportar). El paso 4.1 lee exactamente ese resultado junto con los CSV limpios y escribe `datos/intermedios/resultados_paso_4_1_mlp_regresion.csv`. Desde la raíz o esta carpeta, la raíz se encuentra por `README.md` y `datos/` en el directorio de trabajo o sus ancestros. Desde fuera, montar Drive en Colab si corresponde y definir `os.environ['CLIMATE_PROJECT_ROOT']` apuntando a la raíz antes de ejecutar las celdas; el override se valida. Si falta un CSV, se informa su ruta y no se busca uno alternativo. Los HTML existentes son instantáneas, no resultados recalculados.
 
 ## 🧪 Modelos entrenados
 

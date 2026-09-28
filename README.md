@@ -29,17 +29,18 @@ desafio_cambio_climatico/
 ├── 05_Storytelling/              Capstone narrativo: el informe final del proyecto
 ├── datos/
 │   ├── originales/               Fuentes públicas (instrucciones de descarga)
-│   └── limpios/                  Datasets procesados, listos para usar
+│   ├── limpios/                  Datasets procesados, listos para usar
+│   └── intermedios/              Resultados de modelado (se crea al exportar)
 └── docs/                         Plan de trabajo y documentación
 ```
 
-Cada carpeta numerada corresponde a una etapa del proyecto y contiene su propio `README.md` con el contexto, los hallazgos y los archivos relevantes. Además, **cada notebook `.ipynb` va acompañado de su versión renderizada `.html`** en la misma carpeta: útil para revisar resultados y gráficos sin instalar nada ni ejecutar código.
+Cada carpeta numerada corresponde a una etapa del proyecto y contiene su propio `README.md` con el contexto, los hallazgos y los archivos relevantes. Los archivos `.html` existentes son **instantáneas de ejecuciones anteriores**: no se regeneraron al modificar las rutas y pueden mostrar rutas o resultados desactualizados.
 
 ---
 
 ## 🚀 Cómo ejecutar los notebooks
 
-Los notebooks están preparados para ejecutarse **tanto en Google Colab como localmente**, sin modificación. Detectan el entorno automáticamente.
+Los notebooks de las etapas 1–5 que leen datos (excepto 4.4C) resuelven la raíz buscando desde el directorio de trabajo actual hacia sus ancestros el primero que contenga `README.md` y `datos/`. Funciona desde la raíz o desde una carpeta de etapa; no depende de la ubicación del archivo `.ipynb`. Si se inicia fuera del árbol, definir `CLIMATE_PROJECT_ROOT` con la ruta **de la raíz**: tiene prioridad y se valida (sin recurrir silenciosamente a otra carpeta). Las entradas faltantes producen un error con la ruta esperada; no se descargan ni se sustituyen datos.
 
 ### Opción 1 — Local (recomendada para evaluación)
 
@@ -54,19 +55,31 @@ source venv/bin/activate           # Linux/Mac
 # venv\Scripts\activate            # Windows
 pip install -r requirements.txt
 
-# 3. Abrir Jupyter
+# 3. Colocar los cinco Excel con los nombres exactos en datos/originales/
+#    (ver datos/originales/README.md); luego abrir Jupyter
 jupyter notebook
 ```
 
+La lectura de los Excel originales mediante `pandas.read_excel` requiere motores separados: `openpyxl` para archivos `.xlsx` y `xlrd` para archivos `.xls`. Ambos figuran como dependencias directas en `requirements.txt`; la instalación y la ejecución de los notebooks no se verificaron aquí.
+
 ### Opción 2 — Google Colab
 
-Subir la carpeta `datos/limpios/` a tu Drive en `MyDrive/desafio_profesional/datos_limpios/` y abrir cualquier notebook desde Colab. La primera celda monta el Drive automáticamente.
+Montar Drive **manualmente** en una celda de Colab, mantener una copia del proyecto con `README.md` y `datos/` juntos y configurar la raíz **antes** de ejecutar las celdas de lectura:
+
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+import os
+os.environ['CLIMATE_PROJECT_ROOT'] = '/content/drive/MyDrive/desafio_cambio_climatico'
+```
+
+Ajustar el valor al lugar real de la carpeta completa; no apuntar a `datos/` ni a un CSV. Para ejecutar la limpieza hacen falta los cinco libros en `datos/originales/`. Si el directorio de trabajo está dentro del proyecto y no se usa override, no se requiere configurar la variable.
 
 ---
 
 ## 🗺️ Recorrido sugerido
 
-Para una lectura ordenada del proyecto, recomiendo seguir las etapas en orden:
+Para ejecutar desde las fuentes: 01 (exploración opcional) → 02 (requiere los cinco libros originales; escribe cinco CSV en `datos/limpios/`) → 03 (lee CSV limpios y escribe `datos/intermedios/resultados_modelos_etapa3.csv`) → 4.1 (lee ese resultado y escribe `datos/intermedios/resultados_paso_4_1_mlp_regresion.csv`). Los pasos 4.2, 4.3, 4.4A, 4.4B y 05 leen los CSV limpios según corresponda; 4.4C queda fuera de este contrato. Las carpetas de salida se crean solo al exportar. Para una lectura ordenada del proyecto, recomiendo seguir las etapas en orden:
 
 | Etapa | Carpeta | Contenido |
 |---|---|---|
@@ -92,14 +105,15 @@ Si querés ir directo al **cierre del proyecto**, abrí la [Etapa 5 — Informe 
 
 ## 📊 Datos utilizados
 
-| Dataset | Fuente principal | Uso |
+| CSV generado por el código de Etapa 2 | Libros de entrada según el ETL | Uso |
 |---|---|---|
-| `dataset_global.csv` | Our World in Data (CO₂ Data) | Modelado supervisado (Etapa 3 y 4.1) |
-| `dataset_argentina_anual.csv` | Secretaría de Energía + INDEC | Análisis nacional histórico |
-| `dataset_argentina_mensual.csv` | CAMMESA | Series temporales (Etapa 4.2 y 4.3) |
-| `dataset_argentina_provincias.csv` | Secretaría de Energía | Análisis subnacional |
+| `dataset_global.csv` | DS2 (energía mundial) + DS3 (PBI per cápita) + DS4 (población) | Modelado supervisado (Etapas 3 y 4.1) |
+| `dataset_argentina_anual.csv` | DS1 (factor de emisión) + DS5 (generación y demanda) + variables de Argentina de DS2/DS3/DS4 | Análisis nacional histórico |
+| `dataset_argentina_mensual.csv` | DS5 | Series temporales (Etapas 4.2 y 4.3) |
+| `dataset_argentina_provincias.csv` | DS5 | Análisis subnacional (formato long) |
+| `dataset_argentina_provincias_wide.csv` | DS5 | Análisis subnacional (formato wide) |
 
-Las fuentes originales y el procedimiento para descargarlas están documentados en [`datos/originales/README.md`](./datos/originales/README.md).
+Este mapeo describe **el código**, no acredita el origen de los libros ni certifica que los CSV existentes se hayan generado con una descarga verificable. En particular, el ETL no lee el CSV de Our World in Data. El inventario de los **cinco nombres exactos de Excel**, sus hojas, los datos de origen aún DESCONOCIDOS y el procedimiento para verificarlos están en [`datos/originales/README.md`](./datos/originales/README.md). La resolución de rutas está descrita arriba; las afirmaciones de períodos quedan pendientes de otras tareas.
 
 ---
 
@@ -119,4 +133,4 @@ Lista completa en [`requirements.txt`](./requirements.txt).
 
 Proyecto académico desarrollado en el marco de la Certificación en Data Science de Digital House.
 
-Datos públicos de Secretaría de Energía de la Nación, CAMMESA, INDEC y Our World in Data — utilizados con fines educativos.
+Los enlaces a portales de datos son puntos de entrada orientativos; la atribución institucional de los cinco archivos Excel esperados por el ETL sigue sin verificarse (véase [`datos/originales/README.md`](./datos/originales/README.md)).
