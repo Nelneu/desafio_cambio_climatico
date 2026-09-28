@@ -73,7 +73,7 @@ Y, fundamentalmente: **entender por qué** cuando la red gana, y **comparar rigu
 | `04_redes_neuronales_paso4_4_C.ipynb` + `.html` | Síntesis transversal |
 | `README.md` | Este archivo |
 
-> 💡 Cada notebook tiene su **versión renderizada en HTML** en esta misma carpeta, con todas las salidas y gráficos ya ejecutados. Si querés revisar los resultados sin instalar nada ni correr código, esa es la vía rápida.
+> 💡 Los HTML y salidas almacenadas son instantáneas históricas, no resultados recalculados con el ajuste del escalador solo en train en 4.1 y 4.4.A. Sus métricas numéricas todavía requieren una nueva corrida controlada. El split tabular aleatorio por fila comparte países y años entre train/test; no demuestra generalización a países o años nuevos.
 
 ---
 
