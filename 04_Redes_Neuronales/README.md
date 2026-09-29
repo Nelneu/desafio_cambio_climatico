@@ -51,13 +51,13 @@ Y, fundamentalmente: **entender por qué** cuando la red gana, y **comparar rigu
 
 - Búsqueda manual de hiperparámetros (capas, neuronas, dropout, longitud de ventana, learning rate).
 - Análisis de curvas de loss para ajustar regularización y early stopping.
-- Modelo final más estable, con mejor generalización.
+- Protocolo corregido: tuning por forecast recursivo de 12 meses de 2017, train hasta 2016; configuración cerrada antes de reentrenar en pre-2018 y evaluar una vez el test 2018. No hay métricas nuevas hasta la corrida DR-3.
 
 ### Paso 4.4 — Comparación rigurosa ML vs DL
 
 - **Bloque A (regresión):** comparación cabeza a cabeza de Ridge, Lasso y MLP (con 3 seeds para robustez) sobre el dataset global. Tabla A consolidada con métricas y costos computacionales.
-- **Bloque B (forecasting):** comparación de ARIMA, LSTM Simple y LSTM Tuneada sobre la serie mensual argentina. Tabla B con visualizaciones de predicciones.
-- **Bloque C (síntesis):** tabla transversal con 7 modelos × 6 dimensiones (precisión, costo computacional, interpretabilidad, datos requeridos, hiperparámetros, complejidad). Cierra con una **guía decisional** sobre cuándo conviene cada enfoque — un aporte práctico que va más allá del proyecto.
+- **Bloque B (forecasting):** comparación histórica independiente de ARIMA, LSTM Simple y una configuración fija alternativa; no reproduce los ganadores del 4.3. Tabla B pendiente de DR-3.
+- **Bloque C (síntesis):** tabla transversal histórica de 7 modelos × 6 dimensiones; sus cifras y ranking de forecasting no validan el protocolo 2017/2018. Revisar después de DR-3.
 
 ---
 
@@ -73,7 +73,7 @@ Y, fundamentalmente: **entender por qué** cuando la red gana, y **comparar rigu
 | `04_redes_neuronales_paso4_4_C.ipynb` + `.html` | Síntesis transversal |
 | `README.md` | Este archivo |
 
-> 💡 Los HTML y salidas almacenadas son instantáneas históricas, no resultados recalculados con el ajuste del escalador solo en train en 4.1 y 4.4.A. Sus métricas numéricas todavía requieren una nueva corrida controlada. El split tabular aleatorio por fila comparte países y años entre train/test; no demuestra generalización a países o años nuevos.
+> 💡 Los HTML y salidas almacenadas son instantáneas históricas, no resultados recalculados con el ajuste del escalador solo en train en 4.1 y 4.4.A ni con el holdout temporal de 4.3. Los números y comparaciones de 4.3, 4.4.B y 4.4.C permanecen históricos hasta DR-3. Sus métricas numéricas todavía requieren una nueva corrida controlada. El split tabular aleatorio por fila comparte países y años entre train/test; no demuestra generalización a países o años nuevos.
 
 ---
 
