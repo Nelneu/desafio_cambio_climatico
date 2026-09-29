@@ -1,6 +1,6 @@
 # Etapa 4 — Redes Neuronales (Deep Learning)
 
-> Donde las redes superan a los lineales — y descubrimos por qué.
+> Comparaciones descriptivas de redes y baselines, con protocolos y límites explícitos.
 
 ---
 
@@ -8,10 +8,10 @@
 
 Aplicar redes neuronales modernas a los dos problemas centrales del proyecto:
 
-1. **Regresión global de CO₂ per cápita** — ¿puede una MLP superar el techo de R² ≈ 0.73 que dejaron los modelos lineales en la Etapa 3?
+1. **Regresión global de CO₂ per cápita** — ¿cómo se compara una MLP con Ridge bajo cada protocolo tabular?
 2. **Forecasting de generación renovable mensual** — ¿puede una LSTM mejorar el ARIMA en Argentina?
 
-Y, fundamentalmente: **entender por qué** cuando la red gana, y **comparar rigurosamente** ambos enfoques.
+Y comparar sus métricas observadas sin atribuir mecanismos internos, significancia ni ventajas de despliegue a partir de estos splits.
 
 ---
 
@@ -32,32 +32,32 @@ Y, fundamentalmente: **entender por qué** cuando la red gana, y **comparar rigu
 
 ## 🏆 Hallazgos clave
 
-### Paso 4.1 — Las MLPs aprenden ratios implícitos
+### Paso 4.1 — Regresión tabular y variable derivada
 
-- Tres arquitecturas MLP probadas, todas con **R² ≈ 0.97** en validación, frente al **R² ≈ 0.73** de Ridge/Lasso/regresión múltiple.
-- Diagnósticos de overfitting descartados (loss train ≈ loss val, métricas estables en CV).
-- **Hipótesis verificada empíricamente:** la MLP aprende internamente la variable derivada `energía_per_cápita = energía_Mtoe / población`, que correlaciona con `co2_per_capita` a ρ = 0.99.
-- **Prueba contundente:** al sumar la variable derivada a Ridge, el modelo lineal **iguala** el desempeño de la MLP. La red no tenía "más capacidad" en sentido genérico — tenía la capacidad específica de componer un cociente vía ReLU, que el modelo lineal por construcción no puede aprender.
+- En 4.1, MLP Medio registró **R² 0.9796** y Ridge **0.7349**. En 4.4.A, otro holdout aleatorio por filas registró MLP Medio **0.9264 ± 0.0103** (3 seeds) y Ridge **0.7568**. No son una sola medición ni prueban generalización fuera de los países/años observados.
+- Las curvas de loss y las métricas guardadas permiten inspeccionar el ajuste en esos splits; no descartan sobreajuste ni prueban generalización.
+- El análisis histórico examinó la variable derivada `energía_per_cápita = energía_Mtoe / población` y su correlación reportada con `co2_per_capita` (ρ = 0.99). Esa asociación no demuestra que la MLP construya el cociente internamente.
+- En la comparación histórica con esa variable calculada manualmente, Ridge alcanzó una métrica cercana a la MLP en la partición examinada. No se evaluó el mecanismo interno de la red ni su comportamiento fuera de esa partición.
 
-> Este hallazgo es **el insight técnico central del proyecto**: la superioridad del deep learning no es magia, es composición no lineal — y se puede inspeccionar y reproducir en un modelo lineal una vez que se entiende.
+> Estos resultados motivan comparar ingeniería manual de variables y MLP en cada protocolo; no identifican una causa de las diferencias de R² ni una superioridad general.
 
 ### Paso 4.2 — LSTM sobre series mensuales
 
 - Modelo entrenado sobre `dataset_argentina_mensual.csv` (96 meses).
 - Ventaneo temporal con secuencias de longitud configurable.
-- Captura estacionalidad y tendencia, mejor que ARIMA en validación.
+- La comparación en la partición de validación es descriptiva; no se demostró que la red haya aprendido patrones estacionales específicos ni que generalice mejor que ARIMA.
 
 ### Paso 4.3 — Fine-tuning del LSTM
 
 - Búsqueda manual de hiperparámetros (capas, neuronas, dropout, longitud de ventana, learning rate).
 - Análisis de curvas de loss para ajustar regularización y early stopping.
-- Protocolo corregido: tuning por forecast recursivo de 12 meses de 2017, train hasta 2016; configuración cerrada antes de reentrenar en pre-2018 y evaluar una vez el test 2018. No hay métricas nuevas hasta la corrida DR-3.
+- En la ejecución aislada DR-3, validación recursiva 2017 (train 2011–2016) seleccionó bs=32, lr=5e-4, sin regularización; reentrenamiento pre-2018 y test 2018: MAPE **20.43 ± 0.10%**, MAE **72.75 ± 0.34 GWh**, RMSE **107.93 ± 0.27 GWh** (3 seeds). En esa ejecución simple 20.74% y ARIMA 26.68% MAPE.
 
 ### Paso 4.4 — Comparación rigurosa ML vs DL
 
 - **Bloque A (regresión):** comparación cabeza a cabeza de Ridge, Lasso y MLP (con 3 seeds para robustez) sobre el dataset global. Tabla A consolidada con métricas y costos computacionales.
-- **Bloque B (forecasting):** comparación histórica independiente de ARIMA, LSTM Simple y una configuración fija alternativa; no reproduce los ganadores del 4.3. Tabla B pendiente de DR-3.
-- **Bloque C (síntesis):** tabla transversal histórica de 7 modelos × 6 dimensiones; sus cifras y ranking de forecasting no validan el protocolo 2017/2018. Revisar después de DR-3.
+- **Bloque B (forecasting):** ejecución independiente de una alternativa fija histórica (bs=4, lr=5e-3), **no** reproduce 4.3: MAPE **20.70 ± 3.47%** (3 seeds); simple **20.61%** y ARIMA **26.68%**.
+- **Bloque C (síntesis):** constantes fuente reconciliadas con 4.4.A y B; no incorpora el modelo seleccionado en 4.3 al ranking ni reentrena. Sus salidas y HTML siguen históricos.
 
 ---
 
@@ -73,7 +73,7 @@ Y, fundamentalmente: **entender por qué** cuando la red gana, y **comparar rigu
 | `04_redes_neuronales_paso4_4_C.ipynb` + `.html` | Síntesis transversal |
 | `README.md` | Este archivo |
 
-> 💡 Los HTML y salidas almacenadas son instantáneas históricas, no resultados recalculados con el ajuste del escalador solo en train en 4.1 y 4.4.A ni con el holdout temporal de 4.3. Los números y comparaciones de 4.3, 4.4.B y 4.4.C permanecen históricos hasta DR-3. Sus métricas numéricas todavía requieren una nueva corrida controlada. El split tabular aleatorio por fila comparte países y años entre train/test; no demuestra generalización a países o años nuevos.
+> 💡 Los HTML y salidas almacenadas son instantáneas históricas, no resultados recalculados con el ajuste del escalador solo en train en 4.1 y 4.4.A ni con el holdout temporal de 4.3. Las mediciones aisladas DR-3 y su protocolo están en [validación neuronal](../docs/neural-validation.md); los outputs de notebooks fuente y HTML siguen históricos, sin regenerar. Las diferencias observadas no prueban superioridad estadística ni una explicación causal. El split tabular aleatorio por fila comparte países y años entre train/test; no demuestra generalización a países o años nuevos.
 
 ---
 
