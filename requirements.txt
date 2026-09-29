@@ -1,5 +1,6 @@
 # Análisis de datos
 pandas>=2.0.0
+jinja2>=3.1.5  # pandas .style
 numpy>=1.24.0
 openpyxl>=3.1.5
 xlrd>=2.0.1

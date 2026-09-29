@@ -89,17 +89,17 @@ Para ejecutar desde las fuentes: 01 (exploración opcional) → 02 (requiere los
 | 4 | [`04_Redes_Neuronales/`](./04_Redes_Neuronales/) | MLP global, LSTM Argentina, comparación ML vs DL |
 | 5 | [`05_Storytelling/`](./05_Storytelling/) | Capstone narrativo: las 4 preguntas centrales y sus respuestas |
 
-Si querés ir directo al **cierre del proyecto**, abrí la [Etapa 5 — Informe Final](./05_Storytelling/) o su [versión renderizada en HTML](./05_Storytelling/05_informe_final.html). Está pensado para leerse de corrido, sin necesidad de ejecutar código.
+Si querés ir directo al **cierre del proyecto**, abrí la [Etapa 5 — Informe Final](./05_Storytelling/). El [HTML](./05_Storytelling/05_informe_final.html) es histórico y no refleja la conciliación DR-3. Protocolo, cifras y límites medidos: [validación neuronal](./docs/neural-validation.md).
 
 ---
 
 ## 🔍 Hallazgos destacados
 
-- **Las MLPs aprenden ratios implícitos.** En el modelado de CO₂ per cápita, la red neuronal alcanzó R² ≈ 0.97 frente a R² ≈ 0.73 de los modelos lineales. La diferencia se explica porque la MLP aprende internamente la variable derivada `energía_per_cápita = energía_Mtoe / población`, que correlaciona con el target a ρ = 0.99. Verificado empíricamente: al sumar la variable derivada al pipeline, Ridge iguala el desempeño de la MLP.
+- **Regresión global, dos protocolos tabulares.** En 4.1, MLP Medio registró R² 0.9796 frente a Ridge 0.7349; en 4.4.A (holdout aleatorio por filas), MLP Medio R² 0.9264 ± 0.0103 en tres seeds frente a Ridge 0.7568. El análisis histórico del cociente `energía_Mtoe / población` es una hipótesis interpretativa, no prueba de que la red haya aprendido esa operación ni de un efecto causal.
 
 - **Las renovables "computables" subestiman la matriz limpia.** La Ley 27.191 solo contabiliza hidroeléctricas pequeñas (≤50 MW), por lo que represas como El Chocón quedan fuera del ratio renovable oficial. Para evaluar la matriz energética completa hay que distinguir explícitamente entre "renovables Ley 27.191" y "fuentes limpias totales" — un matiz importante a la hora de comparar Argentina con otros países.
 
-- **El LSTM captura estacionalidad mensual.** El modelo de series temporales sobre la generación renovable mensual de Argentina detecta los patrones estacionales propios de cada fuente (vientos patagónicos en invierno, radiación solar en verano), lo que lo vuelve útil para forecasting energético operativo.
+- **Forecasting 2018, dos ejecuciones distintas.** En 4.3, selección por validación 2017 dio MAPE de test 20.43 ± 0.10% (tuneada, 3 seeds), 20.74% (simple) y 26.68% (ARIMA). La alternativa histórica fija de 4.4.B no reproduce ese tuning: 20.70 ± 3.47%, frente a 20.61% (simple) y 26.68% (ARIMA). Son diferencias descriptivas, no evidencia de superioridad estadística.
 
 ---
 
